@@ -3,6 +3,35 @@
 import { Form, Input, Button } from "antd";
 
 export default function Home() {
+  const testMessage = async () => {
+    const infoObj = {
+      data: {
+        to: ["61412719531", "61412719531"],
+        from: "eux",
+        message:
+          "Hello {first_name} {last_name}\n\nGet your food here {link}\n\nunsub.au/184",
+        scheduleDate: "1718254392000",
+        link: "https://eux.com.au/",
+        sub: [
+          {
+            first_name: "Adrian ",
+            last_name: "Test",
+          },
+          {
+            first_name: "Soumitra ",
+            last_name: "",
+          },
+        ],
+      },
+    };
+    await fetch("/api/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(infoObj),
+    });
+  };
   const onFinish = async (formObj) => {
     const infoObj = {};
     infoObj.senderName = formObj.senderName;
@@ -90,6 +119,7 @@ export default function Home() {
           </Button>
         </Form.Item>
       </Form>
+      <Button onClick={testMessage}>Test Message</Button>
     </main>
   );
 }
