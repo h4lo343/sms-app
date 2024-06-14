@@ -1,23 +1,19 @@
 import schedule from "node-schedule";
-
-let scheduleTaskQueue = [];
+import sendVonageSMS from "@/app/utils/sendVonageSMS";
 
 export async function POST(request) {
   const { data: requestData } = await request.json();
-  const shortendUrl = urlShorten(requestData.link);
+  const shortendUrl = await urlShorten(requestData.link);
 
   const templateMessage = requestData.message.replace(
     "{link}",
     shortendUrl + "/"
   );
   const shortCodes = extractShortCode(templateMessage);
-  const taskIndex = scheduleMessage(requestData, shortCodes, templateMessage);
-  return new Response(
-    { taskIndex },
-    {
-      status: 200,
-    }
-  );
+  scheduleMessage(requestData, shortCodes, templateMessage);
+  return new Response({
+    status: 200,
+  });
 }
 
 function extractShortCode(str) {
@@ -30,10 +26,11 @@ function extractShortCode(str) {
   return matches;
 }
 
-function scheduleMessage(requestData, shortCodes, templateMessage) {
+async function scheduleMessage(requestData, shortCodes, templateMessage) {
   const time = new Date(Number(requestData.scheduleDate));
-  const job = schedule.scheduleJob(time, function () {
-    for (let i = 0; i < requestData.to.length; i++) {
+  let i = 0;
+  const job = schedule.scheduleJob(requestData.to[i], time, async function () {
+    for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
       const customerData = requestData.sub[i];
       let customerMessage = templateMessage;
@@ -43,17 +40,25 @@ function scheduleMessage(requestData, shortCodes, templateMessage) {
           `{${shortCode}}`,
           shortCodeInfo
         );
-        console.log(customerMessage);
       }
+      const vonage_response = await sendVonageSMS(
+        customerNumber,
+        requestData.from,
+        customerMessage
+      );
     }
   });
-  scheduleTaskQueue.push(job);
-  return scheduleTaskQueue.length;
+  // job.cancel();
+  // scheduleTaskQueue.push(job);
+  // console.log(job, scheduleTaskQueue.length);
 }
 
 export async function DELETE(request) {
-  const { index } = await request.json();
-  scheduleTaskQueue[index].cancle();
+  const { deleteNum } = await request.json();
+  schedule.scheduledJobs[Number(deleteNum)]?.cancle();
+  return new Response({
+    status: 200,
+  });
 }
 
 async function urlShorten(originalURL) {
@@ -79,6 +84,5 @@ async function urlShorten(originalURL) {
     .then((data) => {
       return data;
     });
-  console.log(shortURL);
   return shortURL;
 }

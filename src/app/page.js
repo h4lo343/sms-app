@@ -1,16 +1,27 @@
 "use client";
 
 import { Form, Input, Button } from "antd";
+import { useState } from "react";
 
 export default function Home() {
+  const [deleteNum, setDeleteNum] = useState("");
+  const deleteTask = async () => {
+    await fetch("/api/message", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ deleteNum }),
+    });
+  };
   const testMessage = async () => {
     const infoObj = {
       data: {
-        to: ["61412719531", "61412719531"],
-        from: "eux",
+        to: ["61412719531", "61477605786"],
+        from: "TopSMS",
         message:
           "Hello {first_name} {last_name}\n\nGet your food here {link}\n\nunsub.au/184",
-        scheduleDate: "1718335839000",
+        scheduleDate: "1718362587000",
         link: "https://eux.com.au/",
         sub: [
           {
@@ -18,8 +29,8 @@ export default function Home() {
             last_name: "Test",
           },
           {
-            first_name: "Soumitra ",
-            last_name: "",
+            first_name: "Joe ",
+            last_name: "Z",
           },
         ],
       },
@@ -35,8 +46,6 @@ export default function Home() {
   const onFinish = async (formObj) => {
     const infoObj = {};
     infoObj.senderName = formObj.senderName;
-    infoObj.senderNumber = formObj.senderNumber;
-
     infoObj.SMSContent = formObj.SMSContent;
 
     const res = await fetch("/api/sms", {
@@ -70,25 +79,13 @@ export default function Home() {
       >
         <div>
           <Form.Item
-            label="Sender Number"
-            name="senderNumber"
+            label="Sender Name"
+            name="senderName"
             type={"number"}
             rules={[
               {
                 required: true,
-                message: "Please input sender's number",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Sender Name"
-            name="senderName"
-            rules={[
-              {
-                required: true,
-                message: "Please input the sender's name",
+                message: "Please input sender's Name",
               },
             ]}
           >
@@ -120,6 +117,13 @@ export default function Home() {
         </Form.Item>
       </Form>
       <Button onClick={testMessage}>Test Message</Button>
+      <Input
+        onChange={(v) => {
+          setDeleteNum(v.target.value);
+        }}
+        className={"w-24"}
+      ></Input>
+      <Button onClick={() => deleteTask()}>Delete Task</Button>
     </main>
   );
 }
