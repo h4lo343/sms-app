@@ -10,7 +10,7 @@ export default function Home() {
         from: "eux",
         message:
           "Hello {first_name} {last_name}\n\nGet your food here {link}\n\nunsub.au/184",
-        scheduleDate: "1718254392000",
+        scheduleDate: "1718335839000",
         link: "https://eux.com.au/",
         sub: [
           {

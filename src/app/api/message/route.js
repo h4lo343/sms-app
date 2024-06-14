@@ -1,40 +1,23 @@
 import schedule from "node-schedule";
+
+let scheduleTaskQueue = [];
+
 export async function POST(request) {
-  const temp = await request.json();
-  const requestData = temp.data;
-  const url = `https://cdpt.in/shorten?url=${requestData.link}`;
-  const shortendUrl = await fetch(url).then(
-    async (response) => await response.text()
-  );
+  const { data: requestData } = await request.json();
+  const shortendUrl = urlShorten(requestData.link);
+
   const templateMessage = requestData.message.replace(
     "{link}",
     shortendUrl + "/"
   );
   const shortCodes = extractShortCode(templateMessage);
-
-  for (let i = 0; i < requestData.to.length; i++) {
-    const customerNumber = requestData.to[i];
-    const customerData = requestData.sub[i];
-    let customerMessage = templateMessage;
-
-    for (let shortCode of shortCodes) {
-      const shortCodeInfo = customerData[shortCode] || "";
-      customerMessage = customerMessage.replace(
-        `{${shortCode}}`,
-        shortCodeInfo
-      );
+  const taskIndex = scheduleMessage(requestData, shortCodes, templateMessage);
+  return new Response(
+    { taskIndex },
+    {
+      status: 200,
     }
-    scheduleMessage(
-      customerMessage,
-      requestData.from,
-      customerNumber,
-      requestData.scheduleDate
-    );
-  }
-
-  return new Response({
-    status: 200,
-  });
+  );
 }
 
 function extractShortCode(str) {
@@ -47,10 +30,55 @@ function extractShortCode(str) {
   return matches;
 }
 
-function scheduleMessage(message, from, to, scheduleDate) {
-  const time = new Date(Number(scheduleDate));
-  schedule.scheduleJob(time, function () {
-    console.log(message, from, to);
-    // sendMessage()
+function scheduleMessage(requestData, shortCodes, templateMessage) {
+  const time = new Date(Number(requestData.scheduleDate));
+  const job = schedule.scheduleJob(time, function () {
+    for (let i = 0; i < requestData.to.length; i++) {
+      const customerNumber = requestData.to[i];
+      const customerData = requestData.sub[i];
+      let customerMessage = templateMessage;
+      for (let shortCode of shortCodes) {
+        const shortCodeInfo = customerData[shortCode] || "";
+        customerMessage = customerMessage.replace(
+          `{${shortCode}}`,
+          shortCodeInfo
+        );
+        console.log(customerMessage);
+      }
+    }
   });
+  scheduleTaskQueue.push(job);
+  return scheduleTaskQueue.length;
+}
+
+export async function DELETE(request) {
+  const { index } = await request.json();
+  scheduleTaskQueue[index].cancle();
+}
+
+async function urlShorten(originalURL) {
+  const shortIOKey = process.env.SHORTIO_API_KEY;
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: shortIOKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      originalURL: originalURL,
+      domain: "topsms.au",
+    }),
+  };
+  const { shortURL } = await fetch("https://api.short.io/links", options)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data;
+    });
+  console.log(shortURL);
+  return shortURL;
 }
