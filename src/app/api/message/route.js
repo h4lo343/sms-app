@@ -1,5 +1,6 @@
 import schedule from "node-schedule";
 import sendVonageSMS from "@/app/utils/sendVonageSMS";
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request) {
   const { data: requestData } = await request.json();
@@ -10,8 +11,12 @@ export async function POST(request) {
     shortendUrl + "/"
   );
   const shortCodes = extractShortCode(templateMessage);
-  scheduleMessage(requestData, shortCodes, templateMessage);
-  return new Response({
+  const taskUuid = await scheduleMessage(
+    requestData,
+    shortCodes,
+    templateMessage
+  );
+  return new Response(taskUuid, {
     status: 200,
   });
 }
@@ -27,9 +32,10 @@ function extractShortCode(str) {
 }
 
 async function scheduleMessage(requestData, shortCodes, templateMessage) {
+  const taskUuid = uuidv4();
   const time = new Date(Number(requestData.scheduleDate));
   let i = 0;
-  const job = schedule.scheduleJob(requestData.to[i], time, async function () {
+  const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
       const customerData = requestData.sub[i];
@@ -44,18 +50,17 @@ async function scheduleMessage(requestData, shortCodes, templateMessage) {
       const vonage_response = await sendVonageSMS(
         customerNumber,
         requestData.from,
-        customerMessage
+        customerMessage,
+        taskUuid
       );
     }
   });
-  // job.cancel();
-  // scheduleTaskQueue.push(job);
-  // console.log(job, scheduleTaskQueue.length);
+  return taskUuid;
 }
 
 export async function DELETE(request) {
-  const { deleteNum } = await request.json();
-  schedule.scheduledJobs[Number(deleteNum)]?.cancle();
+  const { taskUuid } = await request.json();
+  schedule.scheduledJobs[taskUuid]?.cancle();
   return new Response({
     status: 200,
   });

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [deleteNum, setDeleteNum] = useState("");
+  const [taskUuid, setTaskUuid] = useState("");
   const deleteTask = async () => {
     await fetch("/api/message", {
       method: "DELETE",
@@ -14,10 +15,15 @@ export default function Home() {
       body: JSON.stringify({ deleteNum }),
     });
   };
+  const getReport = async () => {
+    await fetch(`/api/record?taskUuid=${taskUuid}`, {
+      method: "GET",
+    });
+  };
   const testMessage = async () => {
     const infoObj = {
       data: {
-        to: ["61412719531", "61477605786"],
+        to: ["23123123123123", "61477605786"],
         from: "TopSMS",
         message:
           "Hello {first_name} {last_name}\n\nGet your food here {link}\n\nunsub.au/184",
@@ -77,44 +83,12 @@ export default function Home() {
         // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <div>
-          <Form.Item
-            label="Sender Name"
-            name="senderName"
-            type={"number"}
-            rules={[
-              {
-                required: true,
-                message: "Please input sender's Name",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="SMSContent"
-            label="SMS Content"
-            rules={[
-              {
-                required: true,
-                message: "Please input the SMS content",
-              },
-            ]}
-          >
-            <Input.TextArea rows={6} />
-          </Form.Item>
-        </div>
-
         <Form.Item
           wrapperCol={{
             offset: 8,
             span: 16,
           }}
-        >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+        ></Form.Item>
       </Form>
       <Button onClick={testMessage}>Test Message</Button>
       <Input
@@ -124,6 +98,13 @@ export default function Home() {
         className={"w-24"}
       ></Input>
       <Button onClick={() => deleteTask()}>Delete Task</Button>
+      <Input
+        onChange={(v) => {
+          setTaskUuid(v.target.value);
+        }}
+        className={"w-24"}
+      ></Input>
+      <Button onClick={() => getReport()}>Get Report</Button>
     </main>
   );
 }
