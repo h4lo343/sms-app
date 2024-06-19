@@ -27,8 +27,8 @@ export default function Home() {
         from: "TopSMS",
         message:
           "Hello {first_name} {last_name}\n\nGet your food here {link}\n\nunsub.au/184",
-        scheduleDate: "1718362587000",
-        link: "https://eux.com.au/",
+        // scheduleDate: "1718769876000",
+        link: "https://www.google.com/",
         sub: [
           {
             first_name: "Adrian ",

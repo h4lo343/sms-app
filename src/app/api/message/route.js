@@ -4,17 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request) {
   const { data: requestData } = await request.json();
-  const shortendUrl = await urlShorten(requestData.link);
+  const { shortURL, idString } = await urlShorten(requestData.link);
+  const templateMessage = requestData.message.replace("{link}", shortURL + "/");
 
-  const templateMessage = requestData.message.replace(
-    "{link}",
-    shortendUrl + "/"
-  );
   const shortCodes = extractShortCode(templateMessage);
   const taskUuid = await scheduleMessage(
     requestData,
     shortCodes,
-    templateMessage
+    templateMessage,
+    idString
   );
   return new Response(taskUuid, {
     status: 200,
@@ -31,9 +29,16 @@ function extractShortCode(str) {
   return matches;
 }
 
-async function scheduleMessage(requestData, shortCodes, templateMessage) {
-  const taskUuid = uuidv4();
-  const time = new Date(Number(requestData.scheduleDate));
+async function scheduleMessage(
+  requestData,
+  shortCodes,
+  templateMessage,
+  idString
+) {
+  const taskUuid = uuidv4().slice(0, 4) + "-" + idString;
+  console.log(taskUuid);
+  const time =
+    new Date(Number(requestData.scheduleDate)) || new Date(Date.now() - 1000);
   let i = 0;
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
@@ -76,10 +81,13 @@ async function urlShorten(originalURL) {
     },
     body: JSON.stringify({
       originalURL: originalURL,
-      domain: "topsms.au",
+      domain: "trytopsms.com",
     }),
   };
-  const { shortURL } = await fetch("https://api.short.io/links", options)
+  const { shortURL, idString } = await fetch(
+    "https://api.short.io/links",
+    options
+  )
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -89,5 +97,6 @@ async function urlShorten(originalURL) {
     .then((data) => {
       return data;
     });
-  return shortURL;
+
+  return { shortURL, idString };
 }
