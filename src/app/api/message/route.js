@@ -44,7 +44,7 @@ async function scheduleMessage(
     time = new Date(requestData.scheduleDate);
   }
   console.log(time);
-  time = moment(time);
+  time = moment.tz(time, moment.tz.guess()).toDate();
   let i = 0;
   console.log(time);
   const job = schedule.scheduleJob(taskUuid, time, async function () {
