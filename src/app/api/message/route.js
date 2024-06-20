@@ -2,6 +2,7 @@ import schedule from "node-schedule";
 import sendVonageSMS from "@/app/utils/sendVonageSMS";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
+import moment from "moment-timezone";
 
 export async function POST(request, res) {
   const { data: requestData } = await request.json();
@@ -38,13 +39,14 @@ async function scheduleMessage(
   let time;
   if (!requestData.scheduleDate) {
     const temp = new Date();
-    time = temp.setSeconds(temp.getSeconds() + 5);
+    time = new Date(temp.setSeconds(temp.getSeconds() + 5));
   } else {
     time = new Date(requestData.scheduleDate);
   }
-
+  console.log(time);
+  time = moment.tz(time, "Australia/Sydney").format();
   let i = 0;
-
+  console.log(time);
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
