@@ -1,8 +1,9 @@
 import schedule from "node-schedule";
 import sendVonageSMS from "@/app/utils/sendVonageSMS";
 import { v4 as uuidv4 } from "uuid";
+import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function POST(request, res) {
   const { data: requestData } = await request.json();
   const { shortURL, idString } = await urlShorten(requestData.link);
   const templateMessage = requestData.message.replace("{link}", shortURL + "/");
@@ -14,9 +15,7 @@ export async function POST(request) {
     templateMessage,
     idString
   );
-  return new Response(taskUuid, {
-    status: 200,
-  });
+  return NextResponse.json({ data: taskUuid }, { stasu: 200 });
 }
 
 function extractShortCode(str) {
