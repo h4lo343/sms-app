@@ -48,8 +48,6 @@ async function scheduleMessage(
     );
   }
   let i = 0;
-
-  console.log(time, moment.tz.guess());
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
@@ -67,6 +65,7 @@ async function scheduleMessage(
           shortCodeInfo
         );
       }
+      console.log(customerMessage);
       const vonage_response = await sendVonageSMS(
         customerNumber,
         requestData.from,
