@@ -18,6 +18,7 @@ export async function DELETE(request) {
 
 export async function GET(request) {
   const taskUuid = request.nextUrl.searchParams.get("taskUuid");
+
   if (!schedule.scheduledJobs[taskUuid]) {
     return NextResponse.json(
       { msg: `the task: ${taskUuid} does not exist` },
@@ -25,7 +26,7 @@ export async function GET(request) {
     );
   } else {
     return NextResponse.json(
-      { data: schedule.scheduledJobs[taskUuid].nextInvocation() },
+      { data: schedule.scheduledJobs[taskUuid].nextInvocation().getTime() },
       {
         status: 200,
       }

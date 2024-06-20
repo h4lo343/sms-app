@@ -38,15 +38,18 @@ async function scheduleMessage(
   const taskUuid = uuidv4().slice(0, 4) + "-" + idString;
   let time;
   if (!requestData.scheduleDate) {
-    const temp = new Date();
-    time = new Date(temp.setSeconds(temp.getSeconds() + 5));
+    time = moment().add("3", "seconds").toDate();
   } else {
-    time = new Date(requestData.scheduleDate);
+    time = new Date(
+      moment
+        .utc(Number(requestData.scheduleDate))
+        .tz(moment.tz.guess())
+        .format()
+    );
   }
-  console.log(time);
-  time = moment.tz(time, moment.tz.guess()).toDate();
   let i = 0;
-  console.log(time);
+
+  console.log(time, moment.tz.guess());
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
