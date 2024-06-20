@@ -35,7 +35,14 @@ async function scheduleMessage(
   idString
 ) {
   const taskUuid = uuidv4().slice(0, 4) + "-" + idString;
-  const time = new Date(Number(requestData.scheduleDate));
+  let time;
+  if (!requestData.scheduleDate) {
+    const temp = new Date();
+    time = temp.setSeconds(temp.getSeconds() + 5);
+  } else {
+    time = new Date(requestData.scheduleDate);
+  }
+
   let i = 0;
 
   const job = schedule.scheduleJob(taskUuid, time, async function () {
@@ -44,7 +51,12 @@ async function scheduleMessage(
       const customerData = requestData.sub[i];
       let customerMessage = templateMessage;
       for (let shortCode of shortCodes) {
-        const shortCodeInfo = customerData[shortCode] || "";
+        let shortCodeInfo;
+        if (customerData) {
+          shortCodeInfo = customerData[shortCode];
+        } else {
+          shortCodeInfo = "";
+        }
         customerMessage = customerMessage.replace(
           `{${shortCode}}`,
           shortCodeInfo
