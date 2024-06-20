@@ -36,10 +36,9 @@ async function scheduleMessage(
   idString
 ) {
   const taskUuid = uuidv4().slice(0, 4) + "-" + idString;
-  console.log(taskUuid);
-  const time =
-    new Date(Number(requestData.scheduleDate)) || new Date(Date.now() - 1000);
+  const time = new Date(Number(requestData.scheduleDate));
   let i = 0;
+
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
@@ -61,14 +60,6 @@ async function scheduleMessage(
     }
   });
   return taskUuid;
-}
-
-export async function DELETE(request) {
-  const { taskUuid } = await request.json();
-  schedule.scheduledJobs[taskUuid]?.cancle();
-  return new Response({
-    status: 200,
-  });
 }
 
 async function urlShorten(originalURL) {
