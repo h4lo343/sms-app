@@ -43,57 +43,58 @@ async function scheduleMessage(
   uuid
 ) {
   const taskUuid = uuid + "-" + idString;
-  let time;
+
   if (!requestData.scheduleDate) {
-    time = new Date(new Date().getTime() + 3000);
-    console.log("---------this task has no time---------");
-  } else {
-    console.log("---------this task has thr time---------");
-    time = new Date(
-      moment
-        .utc(Number(requestData.scheduleDate))
-        .tz(moment.tz.guess())
-        .format()
-    );
+    sendMessageTask(requestData, templateMessage, taskUuid, shortCodes);
+    return taskUuid;
   }
+  console.log("---------this task has the time---------");
+  const time = new Date(
+    moment.utc(Number(requestData.scheduleDate)).tz(moment.tz.guess()).format()
+  );
+
   console.log("----------task-scheduled------------");
   const tempMoment = moment()
     .tz("Australia/Sydney")
     .format("YYYY-MM-DD HH:mm:ss");
   const job = schedule.scheduleJob(taskUuid, time, async function () {
-    console.log("***Task Executed***");
-    for (let i = 0; i < requestData.to.length; i++) {
-      const customerNumber = requestData.to[i];
-      const customerData = requestData.sub[i];
-      let customerMessage = templateMessage;
-      for (let shortCode of shortCodes) {
-        let shortCodeInfo;
-        if (customerData) {
-          shortCodeInfo = customerData[shortCode];
-        } else {
-          shortCodeInfo = "";
-        }
-        customerMessage = customerMessage.replace(
-          `{${shortCode}}`,
-          shortCodeInfo
-        );
-      }
-      customerMessage += tempMoment;
-      const vonage_response = await sendVonageSMS(
-        customerNumber,
-        requestData.from,
-        customerMessage,
-        taskUuid
-      );
-      console.log("message send" + " " + taskUuid);
-      // const vonage_response = await sendVonageSMSFetch(
-      //   customerNumber,
-      //   requestData.from,
-      //   customerMessage,
-      //   taskUuid
-      // );
-    }
+    sendMessageTask(requestData, templateMessage, taskUuid, shortCodes);
   });
+  return taskUuid;
+}
+
+async function sendMessageTask(
+  requestData,
+  templateMessage,
+  taskUuid,
+  shortCodes
+) {
+  console.log("***Task Executed***");
+  for (let i = 0; i < requestData.to.length; i++) {
+    const customerNumber = requestData.to[i];
+    const customerData = requestData.sub[i];
+    let customerMessage = templateMessage;
+    for (let shortCode of shortCodes) {
+      let shortCodeInfo;
+      if (customerData) {
+        shortCodeInfo = customerData[shortCode];
+      } else {
+        shortCodeInfo = "";
+      }
+      customerMessage = customerMessage.replace(
+        `{${shortCode}}`,
+        shortCodeInfo
+      );
+    }
+
+    const vonage_response = await sendVonageSMS(
+      customerNumber,
+      requestData.from,
+      customerMessage,
+      taskUuid
+    );
+    console.log("message send" + " " + taskUuid);
+  }
   return taskUuid;
 }
 
