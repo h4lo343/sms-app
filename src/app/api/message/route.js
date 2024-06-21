@@ -3,18 +3,22 @@ import sendVonageSMS from "@/app/utils/sendVonageSMS";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import moment from "moment-timezone";
+import sendVonageSMSFetch from "@/app/utils/sendVonageSMSFetch";
 
 export async function POST(request, res) {
   const { data: requestData } = await request.json();
-  const { shortURL, idString } = await urlShorten(requestData.link);
+  const uuid = uuidv4().slice(0, 4);
+  const { shortURL, idString } = await urlShorten(
+    requestData.link + `#${uuid}`
+  );
   const templateMessage = requestData.message.replace("{link}", shortURL + "/");
-
   const shortCodes = extractShortCode(templateMessage);
   const taskUuid = await scheduleMessage(
     requestData,
     shortCodes,
     templateMessage,
-    idString
+    idString,
+    uuid
   );
   return NextResponse.json({ data: taskUuid }, { stasu: 200 });
 }
@@ -33,9 +37,10 @@ async function scheduleMessage(
   requestData,
   shortCodes,
   templateMessage,
-  idString
+  idString,
+  uuid
 ) {
-  const taskUuid = uuidv4().slice(0, 4) + "-" + idString;
+  const taskUuid = uuid + "-" + idString;
   let time;
   if (!requestData.scheduleDate) {
     time = moment().add("3", "seconds").toDate();
@@ -66,18 +71,25 @@ async function scheduleMessage(
         );
       }
       console.log(customerMessage);
-      const vonage_response = await sendVonageSMS(
-        customerNumber,
-        requestData.from,
-        customerMessage,
-        taskUuid
-      );
+      // const vonage_response = await sendVonageSMS(
+      //   customerNumber,
+      //   requestData.from,
+      //   customerMessage,
+      //   taskUuid
+      // );
+      // const vonage_response = await sendVonageSMSFetch(
+      //   customerNumber,
+      //   requestData.from,
+      //   customerMessage,
+      //   taskUuid
+      // );
     }
   });
   return taskUuid;
 }
 
 async function urlShorten(originalURL) {
+  if (!originalURL) return { shortURL: "", idString: "" };
   const shortIOKey = process.env.SHORTIO_API_KEY;
   const options = {
     method: "POST",
@@ -90,10 +102,7 @@ async function urlShorten(originalURL) {
       domain: "trytopsms.com",
     }),
   };
-  const { shortURL, idString } = await fetch(
-    "https://api.short.io/links",
-    options
-  )
+  const response = await fetch("https://api.short.io/links", options)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -104,5 +113,6 @@ async function urlShorten(originalURL) {
       return data;
     });
 
+  const { shortURL, idString } = response;
   return { shortURL, idString };
 }

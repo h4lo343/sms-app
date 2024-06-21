@@ -29,7 +29,6 @@ export default async function getReport(clientRef) {
       Authorization: `Basic ${authStr}`,
     },
   }).then((res) => res.json());
-
   for (let report of response.records) {
     const status = report.status;
     if (!result[status]) {
