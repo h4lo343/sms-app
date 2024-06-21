@@ -6,6 +6,7 @@ export default async function sendVonageSMS(
   SMSContent,
   clientRef
 ) {
+  console.log("hi i am sdk func");
   const vonage_response = await vonage.sms.send({
     to: customerNumber,
     from: senderName,
