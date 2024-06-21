@@ -45,7 +45,7 @@ async function scheduleMessage(
   const taskUuid = uuid + "-" + idString;
   let time;
   if (!requestData.scheduleDate) {
-    time = new Date(currentTime.getTime() + 3000);
+    time = new Date(new Date().getTime() + 3000);
     console.log("---------this task has no time---------");
   } else {
     console.log("---------this task has thr time---------");
