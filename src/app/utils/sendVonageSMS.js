@@ -7,12 +7,17 @@ export default async function sendVonageSMS(
   clientRef
 ) {
   console.log("hi i am sdk func");
-  const vonage_response = await vonage.sms.send({
-    to: customerNumber,
-    from: senderName,
-    text: SMSContent,
-    "client-ref": clientRef,
-  });
+  const vonage_response = await vonage.sms
+    .send({
+      to: customerNumber,
+      from: senderName,
+      text: SMSContent,
+      "client-ref": clientRef,
+    })
+    .then((res) => {
+      console.log("sdk request finished");
+      return res;
+    });
   console.log("hi i am sdk func finished");
   console.log("------------------vonage_response----------------");
   console.log(vonage_response);
