@@ -86,8 +86,8 @@ async function sendMessageTask(
         shortCodeInfo
       );
     }
-    console.log("enter the sdk func");
-    const vonage_response = await sendVonageSMS(
+    console.log("enter the fetch func");
+    const vonage_response = await sendVonageSMSFetch(
       customerNumber,
       requestData.from,
       customerMessage,
