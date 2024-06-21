@@ -70,19 +70,13 @@ async function scheduleMessage(
           shortCodeInfo
         );
       }
-      console.log(customerMessage);
-      // const vonage_response = await sendVonageSMS(
-      //   customerNumber,
-      //   requestData.from,
-      //   customerMessage,
-      //   taskUuid
-      // );
-      // const vonage_response = await sendVonageSMSFetch(
-      //   customerNumber,
-      //   requestData.from,
-      //   customerMessage,
-      //   taskUuid
-      // );
+
+      const vonage_response = await sendVonageSMSFetch(
+        customerNumber,
+        requestData.from,
+        customerMessage,
+        taskUuid
+      );
     }
   });
   return taskUuid;
