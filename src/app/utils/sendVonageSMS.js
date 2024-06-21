@@ -13,6 +13,7 @@ export default async function sendVonageSMS(
     text: SMSContent,
     "client-ref": clientRef,
   });
+  console.log("hi i am sdk func finished");
   console.log("------------------vonage_response----------------");
   console.log(vonage_response);
   console.log("------------------vonage_response----------------");
