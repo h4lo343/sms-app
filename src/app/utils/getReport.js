@@ -13,7 +13,6 @@ export default async function getReport(clientRef) {
   const params = queryString.stringify({
     account_id: vonageKey,
     client_ref: clientRef,
-
     date_start: "2024-06-14T10:56:27.000Z",
     product: "SMS",
     direction: "outbound",
@@ -29,6 +28,9 @@ export default async function getReport(clientRef) {
       Authorization: `Basic ${authStr}`,
     },
   }).then((res) => res.json());
+  console.log("----------vonage_record---------------");
+  console.log(response);
+  console.log("----------vonage_record---------------");
   for (let report of response.records) {
     const status = report.status;
     if (!result[status]) {

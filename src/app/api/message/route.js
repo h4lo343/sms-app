@@ -7,7 +7,7 @@ import sendVonageSMSFetch from "@/app/utils/sendVonageSMSFetch";
 
 export async function POST(request, res) {
   const { data: requestData } = await request.json();
-  const uuid = uuidv4().slice(0, 4);
+  const uuid = uuidv4().slice(0, 7);
   const urlResponse = await urlShorten(requestData.link + `#${uuid}`);
   console.log("---------------url response-----------------");
   console.log(urlResponse);
