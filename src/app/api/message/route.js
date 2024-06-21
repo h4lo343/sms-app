@@ -8,9 +8,11 @@ import sendVonageSMSFetch from "@/app/utils/sendVonageSMSFetch";
 export async function POST(request, res) {
   const { data: requestData } = await request.json();
   const uuid = uuidv4().slice(0, 4);
-  const { shortURL, idString } = await urlShorten(
-    requestData.link + `#${uuid}`
-  );
+  const urlResponse = await urlShorten(requestData.link + `#${uuid}`);
+  console.log("---------------url response-----------------");
+  console.log(urlResponse);
+  console.log("---------------url response-----------------");
+  const { shortURL, idString } = urlResponse;
   const templateMessage = requestData.message.replace("{link}", shortURL + "/");
   const shortCodes = extractShortCode(templateMessage);
   const taskUuid = await scheduleMessage(
@@ -76,6 +78,9 @@ async function scheduleMessage(
         customerMessage,
         taskUuid
       );
+      console.log("------------------vonage_response----------------");
+      console.log(vonage_response);
+      console.log("------------------vonage_response----------------");
       // const vonage_response = await sendVonageSMSFetch(
       //   customerNumber,
       //   requestData.from,
