@@ -54,10 +54,10 @@ async function scheduleMessage(
         .format()
     );
   }
-  let i = 0;
+
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     console.log("***Task Executed***");
-    for (; i < requestData.to.length; i++) {
+    for (let i = 0; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
       const customerData = requestData.sub[i];
       let customerMessage = templateMessage;
@@ -73,15 +73,16 @@ async function scheduleMessage(
           shortCodeInfo
         );
       }
+      customerMessage += moment()
+        .tz("Australia/Sydney")
+        .format("YYYY-MM-DD HH:mm:ss");
       const vonage_response = await sendVonageSMS(
         customerNumber,
         requestData.from,
         customerMessage,
         taskUuid
       );
-      console.log("------------------vonage_response----------------");
-      console.log(vonage_response);
-      console.log("------------------vonage_response----------------");
+
       // const vonage_response = await sendVonageSMSFetch(
       //   customerNumber,
       //   requestData.from,
