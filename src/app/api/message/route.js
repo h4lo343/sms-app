@@ -46,7 +46,9 @@ async function scheduleMessage(
   let time;
   if (!requestData.scheduleDate) {
     time = moment().add("6", "seconds").toDate();
+    console.log("---------this task has no time---------");
   } else {
+    console.log("---------this task has thr time---------");
     time = new Date(
       moment
         .utc(Number(requestData.scheduleDate))
@@ -54,7 +56,7 @@ async function scheduleMessage(
         .format()
     );
   }
-
+  console.log("----------task-scheduled------------");
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     console.log("***Task Executed***");
     for (let i = 0; i < requestData.to.length; i++) {
