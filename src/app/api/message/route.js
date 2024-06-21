@@ -45,7 +45,7 @@ async function scheduleMessage(
   const taskUuid = uuid + "-" + idString;
   let time;
   if (!requestData.scheduleDate) {
-    time = moment().add("3", "seconds").toDate();
+    time = moment().add("6", "seconds").toDate();
   } else {
     time = new Date(
       moment
