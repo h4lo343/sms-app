@@ -85,7 +85,7 @@ async function scheduleMessage(
         customerMessage,
         taskUuid
       );
-
+      console.log("message send" + " " + taskUuid);
       // const vonage_response = await sendVonageSMSFetch(
       //   customerNumber,
       //   requestData.from,
