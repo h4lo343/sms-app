@@ -45,7 +45,7 @@ async function scheduleMessage(
   const taskUuid = uuid + "-" + idString;
   let time;
   if (!requestData.scheduleDate) {
-    time = moment().add("6", "seconds").toDate();
+    time = new Date(currentTime.getTime() + 3000);
     console.log("---------this task has no time---------");
   } else {
     console.log("---------this task has thr time---------");
@@ -57,6 +57,9 @@ async function scheduleMessage(
     );
   }
   console.log("----------task-scheduled------------");
+  const tempMoment = moment()
+    .tz("Australia/Sydney")
+    .format("YYYY-MM-DD HH:mm:ss");
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     console.log("***Task Executed***");
     for (let i = 0; i < requestData.to.length; i++) {
@@ -75,9 +78,7 @@ async function scheduleMessage(
           shortCodeInfo
         );
       }
-      customerMessage += moment()
-        .tz("Australia/Sydney")
-        .format("YYYY-MM-DD HH:mm:ss");
+      customerMessage += tempMoment;
       const vonage_response = await sendVonageSMS(
         customerNumber,
         requestData.from,
