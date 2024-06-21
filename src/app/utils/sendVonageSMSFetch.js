@@ -24,4 +24,6 @@ export default async function sendVonageSMSFetch(
       client_ref: clientRef,
     }),
   }).then((res) => res.json());
+  console.log(clientRef);
+  return response;
 }

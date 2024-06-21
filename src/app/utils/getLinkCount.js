@@ -10,8 +10,6 @@ export default async function getLinkCount(linkId) {
       accept: "*/*",
     },
   };
-  console.log(requestUrl);
   const response = await fetch(requestUrl, options).then((res) => res.json());
-  console.log(response);
   return response;
 }

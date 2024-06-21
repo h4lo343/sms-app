@@ -10,10 +10,10 @@ const authStr = Buffer.from(vonageKey + ":" + vonageSecret).toString("base64");
 export default async function getReport(clientRef) {
   const linkId = clientRef.split("-")[1];
   const linkInfo = await getLinkCount(linkId);
-
   const params = queryString.stringify({
     account_id: vonageKey,
     client_ref: clientRef,
+
     date_start: "2024-06-14T10:56:27.000Z",
     product: "SMS",
     direction: "outbound",
