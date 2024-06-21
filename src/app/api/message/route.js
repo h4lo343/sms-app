@@ -56,6 +56,7 @@ async function scheduleMessage(
   }
   let i = 0;
   const job = schedule.scheduleJob(taskUuid, time, async function () {
+    console.log("***Task Executed***");
     for (; i < requestData.to.length; i++) {
       const customerNumber = requestData.to[i];
       const customerData = requestData.sub[i];
