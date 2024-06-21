@@ -9,6 +9,7 @@ export default async function sendVonageSMSFetch(
   SMSContent,
   clientRef
 ) {
+  console.log("hi i am fetch func");
   const response = await fetch(baseUrl, {
     method: "POST",
     headers: {
