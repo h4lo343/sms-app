@@ -12,8 +12,9 @@ export default async function getReport(clientRef) {
   const linkInfo = await getLinkCount(linkId);
   const params = queryString.stringify({
     account_id: vonageKey,
-    client_ref: clientRef,
-    date_start: "2024-06-14T10:56:27.000Z",
+    // client_ref: clientRef,
+    id: "e67bc8f2-16a7-4d28-b139-b36cf35c3e3d",
+    // date_start: "2024-06-14T10:56:27.000Z",
     product: "SMS",
     direction: "outbound",
   });

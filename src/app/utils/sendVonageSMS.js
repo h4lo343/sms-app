@@ -13,6 +13,7 @@ export default async function sendVonageSMS(
       from: senderName,
       text: SMSContent,
       "client-ref": clientRef,
+      channel: "sms",
     })
     .then((res) => {
       console.log("sdk request finished");

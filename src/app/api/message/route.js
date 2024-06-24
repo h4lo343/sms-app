@@ -9,6 +9,7 @@ export async function POST(request, res) {
   const { data: requestData } = await request.json();
   const uuid = uuidv4().slice(0, 7);
   const urlResponse = await urlShorten(requestData.link + `#${uuid}`);
+
   console.log("---------------url response-----------------");
   console.log(urlResponse);
   console.log("---------------url response-----------------");
@@ -45,14 +46,12 @@ async function scheduleMessage(
   const taskUuid = uuid + "-" + idString;
 
   if (!requestData.scheduleDate) {
+    console.log("---------this task has no time---------");
     sendMessageTask(requestData, templateMessage, taskUuid, shortCodes);
     return taskUuid;
   }
   console.log("---------this task has the time---------");
-  const time = new Date(
-    moment.utc(Number(requestData.scheduleDate)).tz(moment.tz.guess()).format()
-  );
-
+  const time = moment(requestData.scheduleDate).toDate();
   console.log("----------task-scheduled------------");
   const tempMoment = moment()
     .tz("Australia/Sydney")

@@ -23,8 +23,18 @@ export default async function sendVonageSMSFetch(
       to: customerNumber,
       text: SMSContent,
       client_ref: clientRef,
+      message_type: "text",
+      sms: {
+        encoding_type: "text",
+        content_id: "1107457532145798767",
+        entity_id: "1101456324675322134",
+      },
     }),
   }).then((res) => res.json());
+  console.log("-------------------vonage response----------------");
+  console.log(response);
+
+  console.log("-------------------vonage response----------------");
   console.log(`message id: ${response}`);
   return response;
 }
