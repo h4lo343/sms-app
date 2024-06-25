@@ -8,8 +8,8 @@ import sendVonageSMSFetch from "@/app/utils/sendVonageSMSFetch";
 export async function POST(request, res) {
   const { data: requestData } = await request.json();
   const uuid = uuidv4().slice(0, 7);
-  const urlResponse = await urlShorten(requestData.link + `#${uuid}`);
-
+  const urlResponse = await urlShorten(requestData.link, uuid);
+  console.log(urlResponse);
   console.log("---------------url response-----------------");
   console.log(urlResponse);
   console.log("---------------url response-----------------");
@@ -53,9 +53,6 @@ async function scheduleMessage(
   console.log("---------this task has the time---------");
   const time = moment(requestData.scheduleDate).toDate();
   console.log("----------task-scheduled------------");
-  const tempMoment = moment()
-    .tz("Australia/Sydney")
-    .format("YYYY-MM-DD HH:mm:ss");
   const job = schedule.scheduleJob(taskUuid, time, async function () {
     sendMessageTask(requestData, templateMessage, taskUuid, shortCodes);
   });
@@ -97,8 +94,9 @@ async function sendMessageTask(
   return taskUuid;
 }
 
-async function urlShorten(originalURL) {
-  if (!originalURL) return { shortURL: "", idString: "" };
+async function urlShorten(requestUrl, uuid) {
+  if (!requestUrl) return { shortURL: "", idString: "" };
+  const originalURL = requestUrl + `#${uuid}`;
   const shortIOKey = process.env.SHORTIO_API_KEY;
   const options = {
     method: "POST",
