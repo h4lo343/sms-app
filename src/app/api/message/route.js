@@ -108,6 +108,7 @@ async function urlShorten(requestUrl, uuid) {
       originalURL: originalURL,
       domain: "trytopsms.com",
     }),
+    cache: "no-store",
   };
   const response = await fetch("https://api.short.io/links", options)
     .then((response) => {

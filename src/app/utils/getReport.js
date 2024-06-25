@@ -28,6 +28,7 @@ export default async function getReport(clientRef) {
       "Content-Type": "application/json",
       Authorization: `Basic ${authStr}`,
     },
+    cache: "no-store",
   }).then((res) => res.json());
   console.log("----------vonage_record---------------");
   console.log(response);

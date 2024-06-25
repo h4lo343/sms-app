@@ -9,6 +9,7 @@ export default async function getLinkCount(linkId) {
       Authorization: shortIOKey,
       accept: "*/*",
     },
+    cache: "no-store",
   };
   const response = await fetch(requestUrl, options).then((res) => res.json());
   return response;
