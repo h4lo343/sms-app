@@ -9,11 +9,14 @@ export async function POST(request, res) {
   const { data: requestData } = await request.json();
   const uuid = uuidv4().slice(0, 7);
   const urlResponse = await urlShorten(requestData.link, uuid);
+
   console.log(urlResponse);
   console.log("---------------url response-----------------");
   console.log(urlResponse);
   console.log("---------------url response-----------------");
-  const { shortURL, idString } = urlResponse;
+  const { shortURL: temp, idString } = urlResponse;
+
+  const shortURL = temp.split("//")[1];
   const templateMessage = requestData.message.replace("{link}", shortURL + "/");
   const shortCodes = extractShortCode(templateMessage);
   const taskUuid = await scheduleMessage(
@@ -106,7 +109,7 @@ async function urlShorten(requestUrl, uuid) {
     },
     body: JSON.stringify({
       originalURL: originalURL,
-      domain: "trytopsms.com",
+      domain: "topsms.au",
     }),
     cache: "no-store",
   };
