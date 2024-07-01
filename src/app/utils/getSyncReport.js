@@ -33,11 +33,13 @@ export default async function getReport(clientRef) {
     },
     cache: "no-store",
   }).then((res) => res.json());
+  console.log(response);
   nextLink = response._links?.next?.href;
   records.push(...response.records);
   while (nextLink) {
     await continueRequest(nextLink);
   }
+  console.log(records);
   console.log(`----------------${records.length} records got------------`);
   for (let report of records) {
     const status = report.status;
@@ -52,7 +54,7 @@ export default async function getReport(clientRef) {
   }
   result.non_delivered_numbers = non_delivered_numbers;
   result.linkInfo = linkInfo;
-
+  records.length = 0;
   return result;
 }
 
